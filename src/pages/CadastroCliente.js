@@ -189,7 +189,7 @@ const CadastroCliente = () => {
       <Header>
         <Container>
           <HeaderContent>
-            <PageTitle>1° Cadastro do Cliente</PageTitle>
+            <PageTitle>Cadastro do Cliente</PageTitle>
             <Button variant="secondary" onClick={() => navigate('/dashboard')}>
               <ArrowLeft size={20} />
               Voltar

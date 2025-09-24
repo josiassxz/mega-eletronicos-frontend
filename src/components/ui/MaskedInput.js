@@ -36,29 +36,29 @@ const masks = {
   cnpj: '99.999.999/9999-99'
 };
 
-const applyMask = (value, mask) => {
-  if (!value || !mask) return '';
+const applyMask = (value, maskPattern) => {
+  if (!value || !maskPattern) return '';
   
-  const cleanValue = value.replace(/\D/g, '');
-  if (!cleanValue) return '';
+  const numbersOnly = String(value).replace(/\D/g, '');
+  if (!numbersOnly) return '';
   
-  let maskedValue = '';
-  let valueIndex = 0;
+  let result = '';
+  let numberIndex = 0;
   
-  for (let i = 0; i < mask.length && valueIndex < cleanValue.length; i++) {
-    if (mask[i] === '9') {
-      maskedValue += cleanValue[valueIndex];
-      valueIndex++;
+  for (let i = 0; i < maskPattern.length && numberIndex < numbersOnly.length; i++) {
+    if (maskPattern[i] === '9') {
+      result += numbersOnly[numberIndex];
+      numberIndex++;
     } else {
-      maskedValue += mask[i];
+      result += maskPattern[i];
     }
   }
   
-  return maskedValue;
+  return result;
 };
 
-const removeMask = (value) => {
-  return value ? value.replace(/\D/g, '') : '';
+const getOnlyNumbers = (value) => {
+  return String(value || '').replace(/\D/g, '');
 };
 
 export const MaskedInput = ({ 
@@ -66,71 +66,64 @@ export const MaskedInput = ({
   value = '', 
   onChange, 
   placeholder,
-  type = 'text',
   name,
   ...props 
 }) => {
-  const inputRef = useRef(null);
-  const maskPattern = typeof mask === 'string' ? mask : masks[mask] || '';
+  // Obter o padrão da máscara
+  const maskPattern = masks[mask] || '';
   
-  const [internalValue, setInternalValue] = useState(() => {
-    if (!value) return '';
-    const cleanValue = removeMask(value);
-    return applyMask(cleanValue, maskPattern);
-  });
+  // Estado para o valor exibido (com máscara)
+  const [displayValue, setDisplayValue] = useState('');
 
+  // Inicializar e sincronizar o valor exibido
   useEffect(() => {
-    if (!value) {
-      setInternalValue('');
-      return;
-    }
-    const cleanValue = removeMask(value);
-    const maskedValue = applyMask(cleanValue, maskPattern);
-    setInternalValue(maskedValue);
+    const numbersOnly = getOnlyNumbers(value);
+    const formatted = numbersOnly ? applyMask(numbersOnly, maskPattern) : '';
+    setDisplayValue(formatted);
   }, [value, maskPattern]);
 
-  const handleChange = (e) => {
+  const handleInputChange = (e) => {
     const inputValue = e.target.value;
     
-    // Remove todos os caracteres não numéricos
-    const numbersOnly = inputValue.replace(/\D/g, '');
+    // Extrair apenas números
+    const numbersOnly = getOnlyNumbers(inputValue);
     
-    // Aplica a máscara
-    const maskedValue = numbersOnly ? applyMask(numbersOnly, maskPattern) : '';
+    // Aplicar máscara para exibição
+    const formattedValue = numbersOnly ? applyMask(numbersOnly, maskPattern) : '';
     
-    // Atualiza o valor interno
-    setInternalValue(maskedValue);
+    // Atualizar valor exibido
+    setDisplayValue(formattedValue);
     
-    // Chama o onChange do pai com o valor limpo
+    // Notificar componente pai com números limpos
     if (onChange) {
-      const event = {
+      onChange({
         target: {
           name: name,
           value: numbersOnly
         }
-      };
-      onChange(event);
+      });
     }
   };
 
   const handleKeyDown = (e) => {
-    // Permite teclas de controle
-    const controlKeys = [
+    // Teclas permitidas
+    const allowedKeys = [
       'Backspace', 'Delete', 'Tab', 'Escape', 'Enter',
       'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown',
       'Home', 'End'
     ];
     
-    if (controlKeys.includes(e.key)) {
+    // Permitir teclas de controle
+    if (allowedKeys.includes(e.key)) {
       return;
     }
     
-    // Permite Ctrl+A, Ctrl+C, Ctrl+V, etc.
+    // Permitir Ctrl+A, Ctrl+C, Ctrl+V, etc.
     if (e.ctrlKey || e.metaKey) {
       return;
     }
     
-    // Bloqueia tudo que não seja número
+    // Permitir apenas dígitos
     if (!/^\d$/.test(e.key)) {
       e.preventDefault();
     }
@@ -138,11 +131,10 @@ export const MaskedInput = ({
 
   return (
     <StyledInput
-      ref={inputRef}
       type="text"
       name={name}
-      value={internalValue}
-      onChange={handleChange}
+      value={displayValue}
+      onChange={handleInputChange}
       onKeyDown={handleKeyDown}
       placeholder={placeholder}
       {...props}
