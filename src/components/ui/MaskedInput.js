@@ -67,54 +67,61 @@ export const MaskedInput = ({
   onChange, 
   placeholder,
   type = 'text',
+  name,
   ...props 
 }) => {
   const inputRef = useRef(null);
-  const [displayValue, setDisplayValue] = useState(() => {
-    const maskPattern = typeof mask === 'string' ? mask : masks[mask];
-    return value ? applyMask(value, maskPattern) : '';
+  const maskPattern = typeof mask === 'string' ? mask : masks[mask] || '';
+  
+  const [internalValue, setInternalValue] = useState(() => {
+    if (!value) return '';
+    const cleanValue = removeMask(value);
+    return applyMask(cleanValue, maskPattern);
   });
 
   useEffect(() => {
-    const maskPattern = typeof mask === 'string' ? mask : masks[mask];
-    setDisplayValue(value ? applyMask(value, maskPattern) : '');
-  }, [value, mask]);
+    if (!value) {
+      setInternalValue('');
+      return;
+    }
+    const cleanValue = removeMask(value);
+    const maskedValue = applyMask(cleanValue, maskPattern);
+    setInternalValue(maskedValue);
+  }, [value, maskPattern]);
 
   const handleChange = (e) => {
     const inputValue = e.target.value;
-    const maskPattern = typeof mask === 'string' ? mask : masks[mask];
     
-    // Remove caracteres não numéricos
-    const cleanValue = removeMask(inputValue);
+    // Remove todos os caracteres não numéricos
+    const numbersOnly = inputValue.replace(/\D/g, '');
     
-    // Aplica a máscara apenas se houver valor
-    const maskedValue = cleanValue ? applyMask(cleanValue, maskPattern) : '';
+    // Aplica a máscara
+    const maskedValue = numbersOnly ? applyMask(numbersOnly, maskPattern) : '';
     
-    setDisplayValue(maskedValue);
+    // Atualiza o valor interno
+    setInternalValue(maskedValue);
     
-    // Chama o onChange com o valor limpo
+    // Chama o onChange do pai com o valor limpo
     if (onChange) {
-      const syntheticEvent = {
-        ...e,
+      const event = {
         target: {
-          ...e.target,
-          value: cleanValue,
-          maskedValue: maskedValue
+          name: name,
+          value: numbersOnly
         }
       };
-      onChange(syntheticEvent);
+      onChange(event);
     }
   };
 
   const handleKeyDown = (e) => {
     // Permite teclas de controle
-    const allowedKeys = [
+    const controlKeys = [
       'Backspace', 'Delete', 'Tab', 'Escape', 'Enter',
       'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown',
       'Home', 'End'
     ];
     
-    if (allowedKeys.includes(e.key)) {
+    if (controlKeys.includes(e.key)) {
       return;
     }
     
@@ -123,8 +130,8 @@ export const MaskedInput = ({
       return;
     }
     
-    // Permite apenas números
-    if (!/\d/.test(e.key)) {
+    // Bloqueia tudo que não seja número
+    if (!/^\d$/.test(e.key)) {
       e.preventDefault();
     }
   };
@@ -133,7 +140,8 @@ export const MaskedInput = ({
     <StyledInput
       ref={inputRef}
       type="text"
-      value={displayValue}
+      name={name}
+      value={internalValue}
       onChange={handleChange}
       onKeyDown={handleKeyDown}
       placeholder={placeholder}
