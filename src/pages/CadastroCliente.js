@@ -146,7 +146,7 @@ const CadastroCliente = () => {
     }
 
     // Validação de CPF (básica)
-    if (formData.cpf && formData.cpf.replace(/\D/g, '').length !== 11) {
+    if (formData.cpf && formData.cpf.length !== 11) {
       newErrors.cpf = 'CPF deve ter 11 dígitos';
     }
 
