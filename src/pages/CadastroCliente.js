@@ -1,6 +1,7 @@
 
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 import styled from 'styled-components';
 import { 
   User, 
@@ -88,6 +89,7 @@ const ActionButtons = styled.div`
 
 const CadastroCliente = () => {
   const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
   const [documentFile, setDocumentFile] = useState(null);
@@ -175,7 +177,13 @@ const CadastroCliente = () => {
         await clientService.uploadPhoto(clientId, 'selfie', selfieFile);
       }
 
-      navigate('/dashboard');
+      if (isAuthenticated) {
+        navigate('/dashboard');
+      } else {
+        // Para usuários não logados, mostrar mensagem de sucesso e redirecionar para login
+        alert('Cliente cadastrado com sucesso! Faça login para gerenciar seus clientes.');
+        navigate('/login');
+      }
     } catch (error) {
       console.error('Erro ao cadastrar cliente:', error);
       setErrors({ submit: 'Erro ao cadastrar cliente. Tente novamente.' });
@@ -190,7 +198,7 @@ const CadastroCliente = () => {
         <Container>
           <HeaderContent>
             <PageTitle>Cadastro do Cliente</PageTitle>
-            <Button variant="secondary" onClick={() => navigate('/dashboard')}>
+            <Button variant="secondary" onClick={() => navigate(isAuthenticated ? '/dashboard' : '/')}>
               <ArrowLeft size={20} />
               Voltar
             </Button>
@@ -534,7 +542,7 @@ const CadastroCliente = () => {
               <Button 
                 type="button" 
                 variant="secondary" 
-                onClick={() => navigate('/dashboard')}
+                onClick={() => navigate(isAuthenticated ? '/dashboard' : '/')}
               >
                 Cancelar
               </Button>
