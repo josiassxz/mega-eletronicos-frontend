@@ -14,6 +14,7 @@ import {
   Save
 } from 'lucide-react';
 import { clientService } from '../services/clientService';
+import { viaCepService } from '../services/viaCepService';
 import { Container, Grid, Section } from '../components/ui/Container';
 import { Button } from '../components/ui/Button';
 import { Input, Select, FormGroup, Label, ErrorMessage } from '../components/ui/Input';
@@ -123,7 +124,7 @@ const CadastroCliente = () => {
     rendaMensal: ''
   });
 
-  const handleChange = (e) => {
+  const handleChange = async (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
@@ -136,6 +137,24 @@ const CadastroCliente = () => {
         ...prev,
         [name]: ''
       }));
+    }
+
+    // Buscar endereço quando CEP for preenchido
+    if (name === 'cep' && value.replace(/\D/g, '').length === 8) {
+      try {
+        const endereco = await viaCepService.buscarCep(value);
+        if (endereco && !endereco.erro) {
+          setFormData(prev => ({
+            ...prev,
+            rua: endereco.logradouro || '',
+            bairro: endereco.bairro || '',
+            cidade: endereco.localidade || '',
+            estado: endereco.uf || ''
+          }));
+        }
+      } catch (error) {
+        console.error('Erro ao buscar CEP:', error);
+      }
     }
   };
 
