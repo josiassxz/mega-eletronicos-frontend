@@ -1,7 +1,7 @@
 
 import React, { useState, useRef } from 'react';
 import styled from 'styled-components';
-import { Upload, FileText, X, Download } from 'lucide-react';
+import { Upload, FileText, X, Download, Trash2 } from 'lucide-react';
 import { theme } from '../../styles/theme';
 
 const UploadContainer = styled.div`
@@ -112,18 +112,22 @@ const ExistingPhotoHeader = styled.div`
   font-size: ${theme.typography.sizes.small};
 `;
 
-const ReplaceButton = styled.button`
-  background: ${theme.colors.accent.red};
-  color: white;
-  border: none;
-  padding: ${theme.spacing.xs} ${theme.spacing.sm};
+const DeleteButton = styled.button`
+  background: rgba(254, 66, 46, 0.1);
+  color: ${theme.colors.accent.red};
+  border: 1px solid rgba(254, 66, 46, 0.3);
+  padding: ${theme.spacing.xs};
   border-radius: ${theme.borderRadius.small};
-  font-size: ${theme.typography.sizes.small};
   cursor: pointer;
-  transition: background 0.3s ease;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
   &:hover {
-    background: ${theme.colors.accent.darkRed};
+    background: rgba(254, 66, 46, 0.2);
+    border-color: ${theme.colors.accent.red};
+    color: ${theme.colors.neutral.white};
   }
 `;
 
@@ -164,6 +168,7 @@ export const FileUpload = ({
 }) => {
   const [isDragOver, setIsDragOver] = useState(false);
   const [error, setError] = useState('');
+  const [showUpload, setShowUpload] = useState(!existingPhotoBase64);
   const fileInputRef = useRef(null);
 
   const downloadPhoto = () => {
@@ -249,10 +254,16 @@ export const FileUpload = ({
     }
   };
 
+  const handleDeleteExisting = () => {
+    setShowUpload(true);
+    // Não chama onRemove aqui para não limpar a foto existente imediatamente
+    // A foto existente só será removida quando o usuário salvar o formulário
+  };
+
   return (
     <div>
-      {/* Exibir foto existente se disponível e não há arquivo novo */}
-      {existingPhotoBase64 && !fileName && (
+      {/* Exibir foto existente se disponível, não há arquivo novo e upload não está sendo mostrado */}
+      {existingPhotoBase64 && !fileName && !showUpload && (
         <ExistingPhotoContainer>
           <ExistingPhotoHeader>
             <span>Foto atual</span>
@@ -263,9 +274,12 @@ export const FileUpload = ({
               >
                 <Download size={16} />
               </DownloadButton>
-              <ReplaceButton onClick={handleClick}>
-                Substituir
-              </ReplaceButton>
+              <DeleteButton 
+                onClick={handleDeleteExisting}
+                title="Remover foto"
+              >
+                <Trash2 size={16} />
+              </DeleteButton>
             </ButtonGroup>
           </ExistingPhotoHeader>
           <ExistingPhotoImage 
@@ -275,14 +289,16 @@ export const FileUpload = ({
         </ExistingPhotoContainer>
       )}
 
-      <UploadContainer
-        isDragOver={isDragOver}
-        hasFile={!!fileName}
-        onClick={handleClick}
-        onDragOver={handleDragOver}
-        onDragLeave={handleDragLeave}
-        onDrop={handleDrop}
-      >
+      {/* Mostrar upload apenas se não há foto existente OU se o usuário clicou para substituir */}
+      {showUpload && (
+        <UploadContainer
+          isDragOver={isDragOver}
+          hasFile={!!fileName}
+          onClick={handleClick}
+          onDragOver={handleDragOver}
+          onDragLeave={handleDragLeave}
+          onDrop={handleDrop}
+        >
         <UploadIcon>
           <Upload size={24} />
         </UploadIcon>
@@ -307,7 +323,8 @@ export const FileUpload = ({
             </RemoveButton>
           </FilePreview>
         )}
-      </UploadContainer>
+        </UploadContainer>
+      )}
       
       {error && (
         <div style={{ color: theme.colors.accent.red, fontSize: theme.typography.sizes.small, marginTop: theme.spacing.xs }}>
