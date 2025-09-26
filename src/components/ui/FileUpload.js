@@ -87,13 +87,54 @@ const HiddenInput = styled.input`
   display: none;
 `;
 
+const ExistingPhotoContainer = styled.div`
+  margin-bottom: ${theme.spacing.md};
+  border-radius: ${theme.borderRadius.medium};
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.05);
+`;
+
+const ExistingPhotoImage = styled.img`
+  width: 100%;
+  max-width: 300px;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+`;
+
+const ExistingPhotoHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: ${theme.spacing.sm} ${theme.spacing.md};
+  background: rgba(255, 255, 255, 0.1);
+  color: ${theme.colors.neutral.lightGray};
+  font-size: ${theme.typography.sizes.small};
+`;
+
+const ReplaceButton = styled.button`
+  background: ${theme.colors.accent.red};
+  color: white;
+  border: none;
+  padding: ${theme.spacing.xs} ${theme.spacing.sm};
+  border-radius: ${theme.borderRadius.small};
+  font-size: ${theme.typography.sizes.small};
+  cursor: pointer;
+  transition: background 0.3s ease;
+
+  &:hover {
+    background: ${theme.colors.accent.darkRed};
+  }
+`;
+
 export const FileUpload = ({ 
   label, 
   accept = "image/*,.pdf", 
   maxSize = 5, // MB
   onFileSelect,
   fileName,
-  onRemove
+  onRemove,
+  existingPhotoBase64
 }) => {
   const [isDragOver, setIsDragOver] = useState(false);
   const [error, setError] = useState('');
@@ -172,6 +213,22 @@ export const FileUpload = ({
 
   return (
     <div>
+      {/* Exibir foto existente se disponível e não há arquivo novo */}
+      {existingPhotoBase64 && !fileName && (
+        <ExistingPhotoContainer>
+          <ExistingPhotoHeader>
+            <span>Foto atual</span>
+            <ReplaceButton onClick={handleClick}>
+              Substituir
+            </ReplaceButton>
+          </ExistingPhotoHeader>
+          <ExistingPhotoImage 
+            src={`data:image/jpeg;base64,${existingPhotoBase64}`}
+            alt="Foto atual"
+          />
+        </ExistingPhotoContainer>
+      )}
+
       <UploadContainer
         isDragOver={isDragOver}
         hasFile={!!fileName}

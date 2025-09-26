@@ -102,6 +102,10 @@ const EditarCliente = () => {
   const [errors, setErrors] = useState({});
   const [documentFile, setDocumentFile] = useState(null);
   const [selfieFile, setSelfieFile] = useState(null);
+  const [existingPhotos, setExistingPhotos] = useState({
+    fotoDocumento: null,
+    fotoSelfie: null
+  });
   
   const [formData, setFormData] = useState({
     nome: '',
@@ -158,6 +162,20 @@ const EditarCliente = () => {
         nomeEmpresa: client.nomeEmpresa || '',
         rendaMensal: client.rendaMensal || ''
       });
+
+      // Carregar fotos existentes se houver
+      if (client.fotoDocumento || client.fotoSelfie) {
+        try {
+          const photosResponse = await clientService.getClientPhotos(id);
+          setExistingPhotos({
+            fotoDocumento: photosResponse.data.fotos.fotoDocumento || null,
+            fotoSelfie: photosResponse.data.fotos.fotoSelfie || null
+          });
+        } catch (photoError) {
+          console.error('Erro ao carregar fotos:', photoError);
+          // Não bloquear o carregamento se as fotos falharem
+        }
+      }
     } catch (error) {
       console.error('Erro ao carregar cliente:', error);
       setErrors({ load: 'Erro ao carregar dados do cliente' });
@@ -576,7 +594,11 @@ const EditarCliente = () => {
                       accept="image/*,.pdf"
                       onFileSelect={setDocumentFile}
                       fileName={documentFile?.name}
-                      onRemove={() => setDocumentFile(null)}
+                      onRemove={() => {
+                        setDocumentFile(null);
+                        setExistingPhotos(prev => ({ ...prev, fotoDocumento: null }));
+                      }}
+                      existingPhotoBase64={existingPhotos.fotoDocumento}
                     />
                   </FormGroup>
 
@@ -587,7 +609,11 @@ const EditarCliente = () => {
                       accept="image/*"
                       onFileSelect={setSelfieFile}
                       fileName={selfieFile?.name}
-                      onRemove={() => setSelfieFile(null)}
+                      onRemove={() => {
+                        setSelfieFile(null);
+                        setExistingPhotos(prev => ({ ...prev, fotoSelfie: null }));
+                      }}
+                      existingPhotoBase64={existingPhotos.fotoSelfie}
                     />
                   </FormGroup>
                 </UploadSection>
