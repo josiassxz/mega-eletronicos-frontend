@@ -171,7 +171,10 @@ export const FileUpload = ({
   const [showUpload, setShowUpload] = useState(!existingPhotoBase64);
   const fileInputRef = useRef(null);
 
-  const downloadPhoto = () => {
+  const downloadPhoto = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
     if (!existingPhotoBase64) return;
     
     // Criar um link temporário para download
@@ -254,7 +257,10 @@ export const FileUpload = ({
     }
   };
 
-  const handleDeleteExisting = () => {
+  const handleDeleteExisting = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
     setShowUpload(true);
     // Não chama onRemove aqui para não limpar a foto existente imediatamente
     // A foto existente só será removida quando o usuário salvar o formulário
