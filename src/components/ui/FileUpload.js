@@ -1,7 +1,7 @@
 
 import React, { useState, useRef } from 'react';
 import styled from 'styled-components';
-import { Upload, FileText, X } from 'lucide-react';
+import { Upload, FileText, X, Download } from 'lucide-react';
 import { theme } from '../../styles/theme';
 
 const UploadContainer = styled.div`
@@ -127,6 +127,31 @@ const ReplaceButton = styled.button`
   }
 `;
 
+const DownloadButton = styled.button`
+  background: rgba(255, 255, 255, 0.1);
+  color: ${theme.colors.neutral.lightGray};
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: ${theme.spacing.xs};
+  border-radius: ${theme.borderRadius.small};
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.2);
+    color: ${theme.colors.neutral.white};
+    border-color: rgba(255, 255, 255, 0.3);
+  }
+`;
+
+const ButtonGroup = styled.div`
+  display: flex;
+  gap: ${theme.spacing.xs};
+  align-items: center;
+`;
+
 export const FileUpload = ({ 
   label, 
   accept = "image/*,.pdf", 
@@ -134,11 +159,24 @@ export const FileUpload = ({
   onFileSelect,
   fileName,
   onRemove,
-  existingPhotoBase64
+  existingPhotoBase64,
+  photoFileName = 'foto'
 }) => {
   const [isDragOver, setIsDragOver] = useState(false);
   const [error, setError] = useState('');
   const fileInputRef = useRef(null);
+
+  const downloadPhoto = () => {
+    if (!existingPhotoBase64) return;
+    
+    // Criar um link temporário para download
+    const link = document.createElement('a');
+    link.href = `data:image/jpeg;base64,${existingPhotoBase64}`;
+    link.download = `${photoFileName}.jpg`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
 
   const validateFile = (file) => {
     if (file.size > maxSize * 1024 * 1024) {
@@ -218,9 +256,17 @@ export const FileUpload = ({
         <ExistingPhotoContainer>
           <ExistingPhotoHeader>
             <span>Foto atual</span>
-            <ReplaceButton onClick={handleClick}>
-              Substituir
-            </ReplaceButton>
+            <ButtonGroup>
+              <DownloadButton 
+                onClick={downloadPhoto}
+                title="Baixar foto"
+              >
+                <Download size={16} />
+              </DownloadButton>
+              <ReplaceButton onClick={handleClick}>
+                Substituir
+              </ReplaceButton>
+            </ButtonGroup>
           </ExistingPhotoHeader>
           <ExistingPhotoImage 
             src={`data:image/jpeg;base64,${existingPhotoBase64}`}

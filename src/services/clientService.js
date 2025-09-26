@@ -49,6 +49,43 @@ export const clientService = {
     return api.put(`/clientes/${id}`, clientData);
   },
 
+  // Atualizar cliente com fotos (condicional: JSON ou multipart)
+  updateClientWithPhotos: (id, clientData, documentFile = null, selfieFile = null) => {
+    // Se não há fotos novas, usar JSON
+    if (!documentFile && !selfieFile) {
+      return api.put(`/clientes/${id}`, clientData, {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+    }
+
+    // Se há fotos, usar multipart/form-data
+    const formData = new FormData();
+    
+    // Adicionar todos os campos do cliente
+    Object.keys(clientData).forEach(key => {
+      if (clientData[key] !== null && clientData[key] !== undefined && clientData[key] !== '') {
+        formData.append(key, clientData[key]);
+      }
+    });
+    
+    // Adicionar arquivos se existirem
+    if (documentFile) {
+      formData.append('fotoDocumento', documentFile);
+    }
+    
+    if (selfieFile) {
+      formData.append('fotoSelfie', selfieFile);
+    }
+    
+    return api.put(`/clientes/${id}`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    });
+  },
+
   // Deletar cliente
   deleteClient: (id) => {
     return api.delete(`/clientes/${id}`);

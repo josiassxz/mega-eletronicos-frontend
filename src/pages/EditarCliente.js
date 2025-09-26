@@ -231,17 +231,8 @@ const EditarCliente = () => {
     setLoading(true);
     
     try {
-      // Atualizar cliente
-      await clientService.updateClient(id, formData);
-
-      // Upload de fotos se fornecidas
-      if (documentFile) {
-        await clientService.uploadPhoto(id, 'documento', documentFile);
-      }
-      
-      if (selfieFile) {
-        await clientService.uploadPhoto(id, 'selfie', selfieFile);
-      }
+      // Usar a nova função que decide automaticamente entre JSON e multipart
+      await clientService.updateClientWithPhotos(id, formData, documentFile, selfieFile);
 
       navigate('/dashboard');
     } catch (error) {
@@ -599,6 +590,7 @@ const EditarCliente = () => {
                         setExistingPhotos(prev => ({ ...prev, fotoDocumento: null }));
                       }}
                       existingPhotoBase64={existingPhotos.fotoDocumento}
+                      photoFileName={`documento_${formData.nome || 'cliente'}_${id}`}
                     />
                   </FormGroup>
 
@@ -614,6 +606,7 @@ const EditarCliente = () => {
                         setExistingPhotos(prev => ({ ...prev, fotoSelfie: null }));
                       }}
                       existingPhotoBase64={existingPhotos.fotoSelfie}
+                      photoFileName={`selfie_${formData.nome || 'cliente'}_${id}`}
                     />
                   </FormGroup>
                 </UploadSection>
