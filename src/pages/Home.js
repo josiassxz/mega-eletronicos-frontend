@@ -19,7 +19,7 @@ const slideInfinite = keyframes`
     transform: translateX(0);
   }
   100% {
-    transform: translateX(-100%);
+    transform: translateX(-50%);
   }
 `;
 
@@ -177,19 +177,24 @@ const CarouselTitle = styled.h3`
 
 const CarouselTrack = styled.div`
   display: flex;
-  animation: ${slideInfinite} 20s linear infinite;
-  width: calc(200% + 100px);
+  animation: ${slideInfinite} 25s linear infinite;
+  width: fit-content;
+  gap: 60px;
+  
+  @media (max-width: ${theme.breakpoints.mobile}) {
+    gap: 40px;
+  }
 `;
 
 const CarouselItem = styled.div`
   flex: 0 0 auto;
-  margin: 0 30px;
   display: flex;
   align-items: center;
   justify-content: center;
-
+  min-width: 120px;
+  
   @media (max-width: ${theme.breakpoints.mobile}) {
-    margin: 0 20px;
+    min-width: 100px;
   }
 `;
 
@@ -221,8 +226,8 @@ const Home = () => {
     { name: 'Xiaomi', logo: '/assets/xiaomi.png' }
   ];
 
-  // Duplicar as marcas para efeito infinito
-  const duplicatedBrands = [...brands, ...brands];
+  // Triplicar as marcas para efeito infinito mais suave
+  const duplicatedBrands = [...brands, ...brands, ...brands];
 
   const handleStartClick = () => {
     navigate('/cadastro-cliente');
