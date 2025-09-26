@@ -14,127 +14,192 @@ const fadeIn = keyframes`
   }
 `;
 
-const slideInfinite = keyframes`
-  0% {
-    transform: translateX(0);
-  }
-  100% {
-    transform: translateX(-50%);
-  }
-`;
+
 
 const Container = styled.div`
   min-height: 100vh;
   background: linear-gradient(135deg, 
-    ${theme.colors.primary.dark} 0%, 
-    ${theme.colors.primary.main} 50%, 
-    ${theme.colors.accent.red} 100%
+    #0D0A1F 0%, 
+    #1A0F2E 30%,
+    #2D1B3D 60%,
+    #7A1E1C 90%,
+    #B22A1F 100%
   );
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
   padding: ${theme.spacing.xl};
+  padding-bottom: 120px; /* Espaço para o rodapé */
   position: relative;
   overflow: hidden;
 
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: radial-gradient(circle at 30% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
-                radial-gradient(circle at 70% 80%, rgba(254, 66, 46, 0.2) 0%, transparent 50%);
-    pointer-events: none;
+  @media (max-width: ${theme.breakpoints.tablet}) {
+    padding: ${theme.spacing.lg};
+    padding-bottom: 100px;
+  }
+
+  @media (max-width: ${theme.breakpoints.mobile}) {
+    padding: ${theme.spacing.md};
+    padding-bottom: 90px;
   }
 `;
 
 const MainContent = styled.div`
   display: flex;
-  flex-direction: column;
   align-items: center;
-  text-align: center;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 1200px;
   z-index: 2;
   animation: ${fadeIn} 1s ease-out;
-  max-width: 800px;
-`;
-
-const Logo = styled.img`
-  width: 300px;
-  height: auto;
-  margin-bottom: ${theme.spacing.xl};
-  filter: drop-shadow(0 10px 30px rgba(0, 0, 0, 0.3));
-  transition: transform 0.3s ease;
-
-  &:hover {
-    transform: scale(1.05);
-  }
-
+  
   @media (max-width: ${theme.breakpoints.tablet}) {
-    width: 250px;
-    margin-bottom: ${theme.spacing.lg};
-  }
-
-  @media (max-width: ${theme.breakpoints.mobile}) {
-    width: 200px;
+    flex-direction: column;
+    text-align: center;
+    gap: ${theme.spacing.xl};
   }
 `;
 
-const Title = styled.h1`
-  font-size: 3.5rem;
-  font-weight: ${theme.typography.weights.bold};
-  color: ${theme.colors.neutral.white};
+const TextSection = styled.div`
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  
+  @media (max-width: ${theme.breakpoints.tablet}) {
+    align-items: center;
+    text-align: center;
+  }
+`;
+
+const LogoSection = styled.div`
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  
+  @media (max-width: ${theme.breakpoints.tablet}) {
+    justify-content: center;
+  }
+`;
+
+const Subtitle = styled.h2`
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: #FFFFFF;
   margin-bottom: ${theme.spacing.md};
-  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-  line-height: 1.2;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  opacity: 0.9;
 
   @media (max-width: ${theme.breakpoints.tablet}) {
-    font-size: 2.8rem;
+    font-size: 1rem;
   }
 
   @media (max-width: ${theme.breakpoints.mobile}) {
-    font-size: 2.2rem;
+    font-size: 0.9rem;
   }
 `;
 
-const Subtitle = styled.p`
-  font-size: 1.3rem;
-  color: rgba(255, 255, 255, 0.9);
-  margin-bottom: ${theme.spacing.xl};
-  max-width: 600px;
-  line-height: 1.6;
+const MainTitle = styled.h1`
+  font-family: 'Montserrat', sans-serif;
+  font-size: 4.5rem;
+  font-weight: 800;
+  color: #FFFFFF;
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  line-height: 1;
+  margin-bottom: ${theme.spacing.sm};
 
   @media (max-width: ${theme.breakpoints.tablet}) {
-    font-size: 1.1rem;
-    margin-bottom: ${theme.spacing.lg};
+    font-size: 3.5rem;
   }
 
   @media (max-width: ${theme.breakpoints.mobile}) {
-    font-size: 1rem;
+    font-size: 2.5rem;
+    letter-spacing: 2px;
+  }
+`;
+
+const AccentTitle = styled.h1`
+  font-family: 'Montserrat', sans-serif;
+  font-size: 4.5rem;
+  font-weight: 800;
+  color: #E9442E;
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  line-height: 1;
+
+  @media (max-width: ${theme.breakpoints.tablet}) {
+    font-size: 3.5rem;
+  }
+
+  @media (max-width: ${theme.breakpoints.mobile}) {
+    font-size: 2.5rem;
+    letter-spacing: 2px;
+  }
+`;
+
+const LogoContainer = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
+const Logo3D = styled.div`
+  font-family: 'Montserrat', sans-serif;
+  font-size: 2.5rem;
+  font-weight: 900;
+  color: #C0C0C0;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  text-shadow: 
+    0 1px 0 #999,
+    0 2px 0 #888,
+    0 3px 0 #777,
+    0 4px 0 #666,
+    0 5px 0 #555,
+    0 6px 1px rgba(0,0,0,.1),
+    0 0 5px rgba(0,0,0,.1),
+    0 1px 3px rgba(0,0,0,.3),
+    0 3px 5px rgba(0,0,0,.2),
+    0 5px 10px rgba(0,0,0,.25);
+  transform: perspective(500px) rotateX(15deg);
+  text-align: center;
+  line-height: 1.2;
+  
+  @media (max-width: ${theme.breakpoints.tablet}) {
+    font-size: 2rem;
+  }
+
+  @media (max-width: ${theme.breakpoints.mobile}) {
+    font-size: 1.5rem;
   }
 `;
 
 const StartButton = styled.button`
-  background: linear-gradient(45deg, ${theme.colors.accent.red}, #ff6b4a);
-  color: ${theme.colors.neutral.white};
+  background: linear-gradient(45deg, #E9442E, #ff6b4a);
+  color: #FFFFFF;
   border: none;
   padding: 18px 48px;
   font-size: 1.2rem;
-  font-weight: ${theme.typography.weights.semibold};
+  font-weight: 600;
   border-radius: 50px;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 8px 25px rgba(254, 66, 46, 0.4);
+  box-shadow: 0 8px 25px rgba(233, 68, 46, 0.4);
   text-transform: uppercase;
   letter-spacing: 1px;
-  margin-bottom: ${theme.spacing.xxl};
+  margin-top: ${theme.spacing.xl};
+  font-family: 'Montserrat', sans-serif;
 
   &:hover {
     transform: translateY(-3px);
-    box-shadow: 0 12px 35px rgba(254, 66, 46, 0.6);
-    background: linear-gradient(45deg, #ff6b4a, ${theme.colors.accent.red});
+    box-shadow: 0 12px 35px rgba(233, 68, 46, 0.6);
+    background: linear-gradient(45deg, #ff6b4a, #E9442E);
   }
 
   &:active {
@@ -147,62 +212,54 @@ const StartButton = styled.button`
   }
 `;
 
-const CarouselSection = styled.div`
-  position: absolute;
-  bottom: 80px;
+const CarouselSection = styled.footer`
+  position: fixed;
+  bottom: 0;
   left: 0;
-  right: 0;
-  overflow: hidden;
-  z-index: 1;
-
-  @media (max-width: ${theme.breakpoints.mobile}) {
-    bottom: 40px;
-  }
+  width: 100%;
+  padding: ${theme.spacing.md} 0;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  z-index: 1000;
 `;
 
 const CarouselTitle = styled.h3`
   text-align: center;
-  color: rgba(255, 255, 255, 0.8);
-  font-size: 1.1rem;
-  margin-bottom: ${theme.spacing.lg};
-  text-transform: uppercase;
-  letter-spacing: 2px;
-  font-weight: ${theme.typography.weights.medium};
-
-  @media (max-width: ${theme.breakpoints.mobile}) {
-    font-size: 0.9rem;
-    margin-bottom: ${theme.spacing.md};
-  }
+  color: #FFFFFF;
+  font-size: 1rem;
+  font-weight: 500;
+  margin-bottom: ${theme.spacing.sm};
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  opacity: 0.8;
 `;
 
 const CarouselTrack = styled.div`
   display: flex;
-  animation: ${slideInfinite} 25s linear infinite;
-  width: fit-content;
-  gap: 60px;
-  
-  @media (max-width: ${theme.breakpoints.mobile}) {
-    gap: 40px;
-  }
+  overflow: hidden;
+  width: 100%;
+  position: relative;
+  white-space: nowrap;
+`;
+
+const CarouselContainer = styled.div`
+  display: flex;
+  animation: slideInfinite 30s linear infinite;
+  width: calc(200% + 40px);
 `;
 
 const CarouselItem = styled.div`
   flex: 0 0 auto;
-  display: flex;
+  padding: 0 ${theme.spacing.lg};
+  display: inline-flex;
   align-items: center;
-  justify-content: center;
-  min-width: 120px;
-  
-  @media (max-width: ${theme.breakpoints.mobile}) {
-    min-width: 100px;
-  }
 `;
 
 const BrandLogo = styled.img`
-  height: 60px;
+  height: 40px;
   width: auto;
   filter: brightness(0) invert(1);
-  opacity: 0.7;
+  opacity: 0.6;
   transition: all 0.3s ease;
 
   &:hover {
@@ -211,50 +268,88 @@ const BrandLogo = styled.img`
   }
 
   @media (max-width: ${theme.breakpoints.mobile}) {
-    height: 45px;
+    height: 35px;
   }
 `;
+
+const slideInfinite = keyframes`
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+`;
+
+
+
+
 
 const Home = () => {
   const navigate = useNavigate();
 
-  const brands = [
-    { name: 'Samsung', logo: '/assets/Samsung.png' },
-    { name: 'LG', logo: '/assets/lg.png' },
-    { name: 'Motorola', logo: '/assets/motorola.png' },
-    { name: 'Realme', logo: '/assets/realme.png' },
-    { name: 'Xiaomi', logo: '/assets/xiaomi.png' }
-  ];
-
-  // Triplicar as marcas para efeito infinito mais suave
-  const duplicatedBrands = [...brands, ...brands, ...brands];
-
-  const handleStartClick = () => {
+  const handleLogoClick = () => {
     navigate('/cadastro-cliente');
   };
 
   return (
     <Container>
       <MainContent>
-        <Logo src="/assets/image.png" alt="Mega Eletrônicos" />
-        <Title>Bem-vindo à Mega Eletrônicos</Title>
-        <Subtitle>
-          Sua loja de confiança para smartphones e eletrônicos das melhores marcas. 
-          Cadastre-se agora e descubra nossas ofertas exclusivas!
-        </Subtitle>
-        <StartButton onClick={handleStartClick}>
-          Vamos Começar
-        </StartButton>
+        <TextSection>
+          <Subtitle>Bem-vindo à</Subtitle>
+          <MainTitle>MEGA BOLETO</MainTitle>
+          <AccentTitle>CELULAR<br />NO BOLETO</AccentTitle>
+          <StartButton onClick={() => navigate('/cadastro-cliente')}>
+            Cadastrar Cliente
+          </StartButton>
+        </TextSection>
+
+        <LogoSection>
+          <LogoContainer onClick={handleLogoClick} style={{ cursor: 'pointer' }}>
+            <Logo3D>
+              MEGA<br />
+              ELETRÔNICOS<br />
+              GO
+            </Logo3D>
+          </LogoContainer>
+        </LogoSection>
       </MainContent>
 
       <CarouselSection>
-        <CarouselTitle>Trabalhamos com as melhores marcas</CarouselTitle>
+        <CarouselTitle>Marcas Parceiras</CarouselTitle>
         <CarouselTrack>
-          {duplicatedBrands.map((brand, index) => (
-            <CarouselItem key={`${brand.name}-${index}`}>
-              <BrandLogo src={brand.logo} alt={brand.name} />
+          <CarouselContainer>
+            <CarouselItem>
+              <BrandLogo src="/assets/Samsung.png" alt="Samsung" />
             </CarouselItem>
-          ))}
+            <CarouselItem>
+              <BrandLogo src="/assets/xiaomi.png" alt="Xiaomi" />
+            </CarouselItem>
+            <CarouselItem>
+              <BrandLogo src="/assets/motorola.png" alt="Motorola" />
+            </CarouselItem>
+            <CarouselItem>
+              <BrandLogo src="/assets/lg.png" alt="LG" />
+            </CarouselItem>
+            <CarouselItem>
+              <BrandLogo src="/assets/realme.png" alt="Realme" />
+            </CarouselItem>
+            <CarouselItem>
+              <BrandLogo src="/assets/Samsung.png" alt="Samsung" />
+            </CarouselItem>
+            <CarouselItem>
+              <BrandLogo src="/assets/xiaomi.png" alt="Xiaomi" />
+            </CarouselItem>
+            <CarouselItem>
+              <BrandLogo src="/assets/motorola.png" alt="Motorola" />
+            </CarouselItem>
+            <CarouselItem>
+              <BrandLogo src="/assets/lg.png" alt="LG" />
+            </CarouselItem>
+            <CarouselItem>
+              <BrandLogo src="/assets/realme.png" alt="Realme" />
+            </CarouselItem>
+          </CarouselContainer>
         </CarouselTrack>
       </CarouselSection>
     </Container>

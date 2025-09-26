@@ -214,8 +214,6 @@ const CadastroCliente = () => {
       if (isAuthenticated) {
         navigate('/dashboard');
       } else {
-        // Para usuários não logados, mostrar mensagem de sucesso e redirecionar para login
-        alert('Cliente cadastrado com sucesso! Faça login para gerenciar seus clientes.');
         navigate('/login');
       }
     } catch (error) {
