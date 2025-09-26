@@ -1,6 +1,6 @@
 
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import styled from 'styled-components';
 import { 
@@ -19,6 +19,7 @@ import { Button } from '../components/ui/Button';
 import { Input, Select, FormGroup, Label, ErrorMessage } from '../components/ui/Input';
 import { SectionTitle } from '../components/ui/Typography';
 import { FileUpload } from '../components/ui/FileUpload';
+import { CameraCapture } from '../components/ui/CameraCapture';
 import { MaskedInput } from '../components/ui/MaskedInput';
 import { theme } from '../styles/theme';
 
@@ -89,11 +90,16 @@ const ActionButtons = styled.div`
 
 const CadastroCliente = () => {
   const navigate = useNavigate();
+  const { id } = useParams(); // Para casos de edição
   const { isAuthenticated } = useAuth();
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
   const [documentFile, setDocumentFile] = useState(null);
   const [selfieFile, setSelfieFile] = useState(null);
+  const [existingPhotos, setExistingPhotos] = useState({
+    fotoDocumento: null,
+    fotoSelfie: null
+  });
   
   const [formData, setFormData] = useState({
     nome: '',
@@ -133,6 +139,25 @@ const CadastroCliente = () => {
     }
   };
 
+  // Carregar fotos existentes se houver um ID (modo edição)
+  useEffect(() => {
+    const loadExistingPhotos = async () => {
+      if (id) {
+        try {
+          const photos = await clientService.getClientPhotos(id);
+          setExistingPhotos({
+            fotoDocumento: photos.fotos.fotoDocumento,
+            fotoSelfie: photos.fotos.fotoSelfie
+          });
+        } catch (error) {
+          console.error('Erro ao carregar fotos existentes:', error);
+        }
+      }
+    };
+
+    loadExistingPhotos();
+  }, [id]);
+
   const validateForm = () => {
     const newErrors = {};
 
@@ -164,18 +189,8 @@ const CadastroCliente = () => {
     setLoading(true);
     
     try {
-      // Criar cliente
-      const response = await clientService.createClient(formData);
-      const clientId = response.data.id;
-
-      // Upload de fotos se fornecidas
-      if (documentFile) {
-        await clientService.uploadPhoto(clientId, 'documento', documentFile);
-      }
-      
-      if (selfieFile) {
-        await clientService.uploadPhoto(clientId, 'selfie', selfieFile);
-      }
+      // Criar cliente com fotos em uma única requisição
+      const response = await clientService.createClientWithPhotos(formData, documentFile, selfieFile);
 
       if (isAuthenticated) {
         navigate('/dashboard');
@@ -505,23 +520,29 @@ const CadastroCliente = () => {
                   
                   <FormGroup>
                     <Label>Frente do Documento</Label>
-                    <FileUpload
+                    <CameraCapture
                       label="a frente do documento"
-                      accept="image/*,.pdf"
-                      onFileSelect={setDocumentFile}
-                      fileName={documentFile?.name}
-                      onRemove={() => setDocumentFile(null)}
+                      onPhotoCapture={setDocumentFile}
+                      photoFile={documentFile}
+                      onRemove={() => {
+                        setDocumentFile(null);
+                        setExistingPhotos(prev => ({ ...prev, fotoDocumento: null }));
+                      }}
+                      existingPhotoBase64={existingPhotos.fotoDocumento}
                     />
                   </FormGroup>
 
                   <FormGroup>
                     <Label>Selfie</Label>
-                    <FileUpload
+                    <CameraCapture
                       label="uma selfie"
-                      accept="image/*"
-                      onFileSelect={setSelfieFile}
-                      fileName={selfieFile?.name}
-                      onRemove={() => setSelfieFile(null)}
+                      onPhotoCapture={setSelfieFile}
+                      photoFile={selfieFile}
+                      onRemove={() => {
+                        setSelfieFile(null);
+                        setExistingPhotos(prev => ({ ...prev, fotoSelfie: null }));
+                      }}
+                      existingPhotoBase64={existingPhotos.fotoSelfie}
                     />
                   </FormGroup>
                 </UploadSection>

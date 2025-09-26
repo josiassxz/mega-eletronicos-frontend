@@ -17,6 +17,33 @@ export const clientService = {
     return api.post('/clientes', clientData);
   },
 
+  // Criar cliente com fotos (multipart/form-data)
+  createClientWithPhotos: (clientData, documentFile, selfieFile) => {
+    const formData = new FormData();
+    
+    // Adicionar todos os campos do cliente
+    Object.keys(clientData).forEach(key => {
+      if (clientData[key] !== null && clientData[key] !== undefined && clientData[key] !== '') {
+        formData.append(key, clientData[key]);
+      }
+    });
+    
+    // Adicionar arquivos se existirem
+    if (documentFile) {
+      formData.append('fotoDocumento', documentFile);
+    }
+    
+    if (selfieFile) {
+      formData.append('fotoSelfie', selfieFile);
+    }
+    
+    return api.post('/clientes', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    });
+  },
+
   // Atualizar cliente
   updateClient: (id, clientData) => {
     return api.put(`/clientes/${id}`, clientData);
@@ -37,5 +64,10 @@ export const clientService = {
         'Content-Type': 'multipart/form-data'
       }
     });
+  },
+
+  // Buscar fotos do cliente
+  getClientPhotos: (clientId) => {
+    return api.get(`/clientes/${clientId}/fotos`);
   }
 };
